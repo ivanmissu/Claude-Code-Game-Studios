@@ -1,0 +1,50 @@
+{
+  "_doc": {
+    "system": "combat",
+    "purpose": "防御塔与水晶（建筑）。建筑的无敌解锁顺序 = map_lane.json 中 towers 数组顺序，最后才是 nexus。",
+    "units": { "health": "点", "attack_range": "world units", "attack_interval": "秒/次", "time": "秒" },
+    "schema": {
+      "tower.hero_damage_ramp": "连续命中同一英雄时伤害倍率递增 {per_hit, max} —— 越塔的代价",
+      "tower.retarget_interval_sec": "锁定目标后多久才允许重新选择（避免塔频繁换目标）",
+      "tower.priority": "目标优先级从高到低，与 story-003 验收标准一致",
+      "bounty": "摧毁奖励：killer_gold 给最后一击者，team_gold/team_xp 全队分摊"
+    },
+    "notes": "塔的伤害类型为物理，但对英雄的递增部分按 true 计算，使护甲不能无限堆叠抵消越塔。"
+  },
+  "tower": {
+    "display_name_key": "structure_tower_name",
+    "shape": "tower",
+    "radius": 46,
+    "health": 1300, "armor": 38, "magic_resist": 38,
+    "attack_damage": 96, "damage_type": "physical",
+    "attack_range": 620, "attack_interval": 1.0, "windup_sec": 0.3,
+    "projectile_speed": 1150,
+    "hero_damage_ramp": { "per_hit": 0.34, "max": 2.6, "reset_sec": 3.0 },
+    "ramp_true_damage": true,
+    "retarget_interval_sec": 2.0,
+    "priority": ["hero_attacking_ally_hero", "minion_nearest", "hero_nearest"],
+    "bounty": { "killer_gold": 175, "team_gold": 110, "team_xp": 190 }
+  },
+  "nexus": {
+    "display_name_key": "structure_nexus_name",
+    "shape": "nexus",
+    "radius": 80,
+    "health": 2100, "armor": 46, "magic_resist": 46,
+    "attack_damage": 128, "damage_type": "physical",
+    "attack_range": 700, "attack_interval": 1.0, "windup_sec": 0.3,
+    "projectile_speed": 1150,
+    "hero_damage_ramp": { "per_hit": 0.34, "max": 2.6, "reset_sec": 3.0 },
+    "ramp_true_damage": true,
+    "retarget_interval_sec": 2.0,
+    "priority": ["hero_attacking_ally_hero", "minion_nearest", "hero_nearest"],
+    "bounty": { "killer_gold": 0, "team_gold": 0, "team_xp": 0 }
+  },
+  "invuln": {
+    "order": ["tower_0", "tower_1", "nexus"],
+    "_doc": "数组顺序 = 解锁顺序：前一个未摧毁时后一个 invulnerable（受到伤害 0，并带 invulnerable 标记供 HUD 显示文字+图形双编码）。"
+  },
+  "victory": {
+    "destroy_nexus_wins": true,
+    "game_over_freeze_input": true
+  }
+}

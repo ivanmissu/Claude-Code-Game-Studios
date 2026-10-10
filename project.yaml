@@ -7,21 +7,103 @@ framework:
   version: 1.1.3
   last_upgraded: 2026-09-25
 
-# NOTE: this template ships with no `modes:` block, and the six knobs below must
-# never be added to one.
-#
-# `/start` DOES add `modes.rigor` and `modes.automation` here — that is its job,
-# and a `modes:` block containing those two is the expected state of a configured
-# project, not a mistake.
-#
-# What must stay absent is the six knobs `modes.rigor` FRONTS:
-# `modes.review_mode`, `modes.workflow`, `docs.density`, `qa.level`,
-# `modes.story_granularity` and `team.size`. Seeding any of them in this file
-# pins that value and shadows the rigor expansion, so `/start` asking "what are
-# you building?" would stop changing anything. `/start` Phase 3c documents the
-# same rule for the file it writes.
-#
-# Per-developer preferences belong in `project.local.yaml` (gitignored), not
-# here. `/settings --local <key>=<value>` writes there; `/settings <key>=<value>`
-# edits this file. See `.claude/docs/config-resolution.md` for the full
-# precedence order.
+project:
+  name: "Riftlane"
+  genre: "MOBA (single-lane 1v1 slice)"
+  version: "0.1.0"
+  stage: Concept             # minimal 档不跑 /gate-check，stage 按设计停在 Concept
+  kind: game
+
+# /start writes exactly these two under `modes:` at rigor minimal.
+# The six knobs rigor fronts (review_mode, workflow, docs.density, qa.level,
+# story_granularity, team.size) are deliberately ABSENT — seeding any of them
+# would pin it and shadow the rigor expansion. See the header note this file
+# shipped with, and .claude/docs/effects-map.md.
+modes:
+  rigor: minimal             # minimal | standard | full
+  automation: collaborative  # collaborative | guided | autonomous
+  automation_always_ask:
+    - scope_changes
+    - file_deletions
+    - schema_changes
+
+# ---------------------------------------------------------------- engine
+# DEVIATION, deliberate and recorded: `workflow-catalog.yaml` auto-detects the
+# engine-setup step by matching engine.name against Godot|Unity|Unreal. "Web"
+# matches none of them, so that step's artifact check reports "not detected" and
+# falls back to its human-readable `note:`. Rationale: this sandbox has no Godot,
+# Unity or Unreal binary, and CCGS requires that a story touching anything the
+# player sees be launched, looked at, and evidenced with a retained screenshot —
+# an engine that cannot run here cannot satisfy that rule. The browser can, and
+# its frames can be rendered headlessly by tools/render_evidence.mjs.
+engine:
+  name: "Web"
+  version: "ES2022 / Canvas 2D"
+  language: "JavaScript (ES Modules)"
+  rendering: "Canvas 2D via a draw-command list (two backends: canvas2d, png)"
+  physics: "custom 2D (swept circle vs segment, no engine dependency)"
+
+# No engine-specific specialist agents exist for Web. The closest CCGS roles are
+# named instead; /dev-story routes to these.
+specialists:
+  code: "gameplay-programmer"
+  shader: "technical-artist"        # N/A — no shaders; particle/render work
+  ui: "ui-programmer"
+  additional: ["engine-programmer", "performance-analyst", "qa-tester", "accessibility-specialist"]
+
+naming:
+  classes: PascalCase
+  variables: camelCase
+  constants: SCREAMING_SNAKE
+  signals: past_tense               # event-bus events, e.g. `minion_died`
+  files: snake_case
+  scenes: snake_case
+
+accessibility:
+  target: standard                  # colourblind-safe team colours, remappable
+                                    # keys, UI scale — see story-007
+
+cadence:
+  sprint_length: "none"             # solo minimal path: no sprints
+  milestone_length: "none"
+
+performance:
+  target_framerate: 60
+  frame_budget_ms: 16.67
+  draw_call_limit: null
+  memory_ceiling_mb: null
+  enforce: warn
+
+# Escape hatch (not one of the six rigor-fronted knobs, so it may be explicit).
+# logic/integration tests block story closure; visual/ui screenshots block too —
+# at qa.level minimal the automated tests are waived but the LOOK never is, so
+# visual/ui stay strict on purpose (CHANGELOG 1.1.2 fixed exactly this bug).
+testing:
+  framework: "node:test"
+  strict:
+    logic: true
+    integration: true
+    visual: true
+    ui: true
+    config: false
+
+strict_gate_checks: true
+
+platform:
+  multiplayer: false                # single-player vs AI only — out of scope
+  online: false
+  targets: [Web, PC]
+  primary_input: "Keyboard/Mouse"
+  gamepad_support: "None"
+  touch_support: "None"
+  cert_tier: none
+
+commands:
+  build: "node tools/build_check.mjs"
+  test: "node --test tests/"
+  run: "python3 -m http.server 8081 --bind 0.0.0.0"
+  smoke: "node tools/smoke.mjs"
+
+features:
+  session_state: on
+  token_budget_warn_at: 0.7

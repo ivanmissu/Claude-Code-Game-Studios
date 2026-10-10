@@ -1,0 +1,63 @@
+{
+  "_doc": {
+    "system": "economy",
+    "purpose": "商店物品。MVP 只做单层：基础件与成品件并列，不做多级合成树（brief Out of scope）。",
+    "units": { "cost/sell_value": "金钱", "pct": "比例", "flat": "点数" },
+    "schema": {
+      "stats": "可叠加属性键，必须与 src/gameplay/stats.mjs 的 ITEM_STAT_KEYS 一致（多余键会被测试判为孤儿）",
+      "tier": "1 = 基础件，2 = 成品件（成品件价格更高，属性更强，无合成关系）",
+      "unique": "同名 unique 效果不可叠加（MVP 未使用，字段保留并被测试断言）"
+    },
+    "stat keys": "health, mana, attack_damage, ability_power, armor, magic_resist, attack_speed_pct, move_speed_pct, health_regen, mana_regen, lifesteal_pct, cooldown_reduction_pct, armor_penetration_flat, magic_penetration_flat, ability_damage_pct"
+  },
+  "items": {
+    "iron_edge": {
+      "name_key": "item_iron_edge_name", "desc_key": "item_iron_edge_desc",
+      "cost": 400, "tier": 1, "stats": { "attack_damage": 18 }
+    },
+    "spellbound_ring": {
+      "name_key": "item_spellbound_ring_name", "desc_key": "item_spellbound_ring_desc",
+      "cost": 420, "tier": 1, "stats": { "ability_power": 26, "mana": 90 }
+    },
+    "vitality_charm": {
+      "name_key": "item_vitality_charm_name", "desc_key": "item_vitality_charm_desc",
+      "cost": 380, "tier": 1, "stats": { "health": 180, "health_regen": 3.0 }
+    },
+    "aegis_plate": {
+      "name_key": "item_aegis_plate_name", "desc_key": "item_aegis_plate_desc",
+      "cost": 450, "tier": 1, "stats": { "armor": 26, "health": 90 }
+    },
+    "ward_sigil": {
+      "name_key": "item_ward_sigil_name", "desc_key": "item_ward_sigil_desc",
+      "cost": 430, "tier": 1, "stats": { "magic_resist": 28, "health_regen": 2.0 }
+    },
+    "swift_boots": {
+      "name_key": "item_swift_boots_name", "desc_key": "item_swift_boots_desc",
+      "cost": 620, "tier": 1, "stats": { "move_speed_pct": 0.16, "attack_speed_pct": 0.12 }
+    },
+    "mana_spring": {
+      "name_key": "item_mana_spring_name", "desc_key": "item_mana_spring_desc",
+      "cost": 780, "tier": 2, "stats": { "mana": 260, "mana_regen": 4.0, "cooldown_reduction_pct": 0.12, "ability_power": 22 }
+    },
+    "vampiric_fang": {
+      "name_key": "item_vampiric_fang_name", "desc_key": "item_vampiric_fang_desc",
+      "cost": 1150, "tier": 2, "stats": { "attack_damage": 32, "lifesteal_pct": 0.14 }
+    },
+    "rift_cleaver": {
+      "name_key": "item_rift_cleaver_name", "desc_key": "item_rift_cleaver_desc",
+      "cost": 1250, "tier": 2, "stats": { "attack_damage": 38, "armor_penetration_flat": 14, "attack_speed_pct": 0.18 }
+    },
+    "titan_core": {
+      "name_key": "item_titan_core_name", "desc_key": "item_titan_core_desc",
+      "cost": 1350, "tier": 2, "stats": { "health": 320, "attack_damage": 24, "armor": 22, "magic_resist": 22 }
+    },
+    "void_prism": {
+      "name_key": "item_void_prism_name", "desc_key": "item_void_prism_desc",
+      "cost": 1400, "tier": 2, "stats": { "ability_power": 62, "magic_penetration_flat": 16, "cooldown_reduction_pct": 0.08 }
+    },
+    "sovereign_plate": {
+      "name_key": "item_sovereign_plate_name", "desc_key": "item_sovereign_plate_desc",
+      "cost": 1500, "tier": 2, "stats": { "health": 420, "armor": 46, "magic_resist": 34, "health_regen": 6.0 }
+    }
+  }
+}

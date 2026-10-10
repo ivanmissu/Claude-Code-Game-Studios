@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>裂谷单路 RIFTLANE — MOBA 单路 1v1</title>
+<meta name="description" content="Claude Code Game Studios 模板产出的单路 MOBA 切片：1v1 对 AI，兵线/补刀/塔/野区/装备/推水晶。">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070910;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif}
+  canvas#game{display:block;position:fixed;inset:0;cursor:crosshair;touch-action:none}
+  #status{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);color:#98a2b8;
+    font-size:14px;letter-spacing:.04em;text-align:center;pointer-events:none;z-index:5;
+    font-family:ui-monospace,Menlo,Consolas,monospace}
+  #status .t{color:#f5c542;font-size:22px;display:block;margin-bottom:10px;letter-spacing:.16em}
+  #status .k{display:block;margin-top:14px;color:#5f6a80;font-size:12px;line-height:1.9}
+</style>
+</head>
+<body>
+<canvas id="game" aria-label="Riftlane 游戏画面"></canvas>
+<div id="status">
+  <span class="t">RIFTLANE</span>
+  正在装载模拟与平衡数据…
+  <span class="k">右键移动 · 左键选目标 · A+左键攻击移动 · QWER 技能 · 1-4 加技能点<br>
+  B 商店 · Space 镜头归位 · 滚轮缩放 · M 静音 · F 调试信息</span>
+</div>
+<script type="module" src="src/main.mjs"></script>
+</body>
+</html>

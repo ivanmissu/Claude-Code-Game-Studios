@@ -5,14 +5,20 @@ Each agent owns a specific domain, enforcing separation of concerns and quality.
 
 ## Technology Stack
 
-- **Engine**: [CHOOSE: Godot 4 / Unity / Unreal Engine 5]
-- **Language**: [CHOOSE: GDScript / C# / C++ / Blueprint]
+- **Engine**: Web — Canvas 2D, no third-party engine (pinned in `project.yaml`)
+- **Language**: JavaScript ES2022, ES Modules, zero build step
 - **Version Control**: Git with trunk-based development
-- **Build System**: [SPECIFY after choosing engine]
-- **Asset Pipeline**: [SPECIFY after choosing engine]
+- **Build System**: none — a static file server is the build (`commands.run`)
+- **Asset Pipeline**: data-driven JSON in `assets/data/`; art is procedural
+  (geometry + particles), audio is synthesised WebAudio — no binary assets
 
-> **Note**: Engine-specialist agents exist for Godot, Unity, and Unreal with
-> dedicated sub-specialists. Use the set matching your engine.
+> **Note**: This project's engine is **outside** the three engines CCGS ships
+> specialist agents for (Godot, Unity, Unreal). `/dev-story` therefore routes to
+> the generic roles named in `project.yaml` → `specialists` (`gameplay-programmer`,
+> `engine-programmer`, `ui-programmer`, `technical-artist`, `performance-analyst`,
+> `qa-tester`, `accessibility-specialist`). The deviation and its rationale are
+> recorded in the `engine:` block of `project.yaml` and in
+> `docs/engine-reference/web/VERSION.md`.
 
 ## Project Structure
 
@@ -26,7 +32,10 @@ Each agent owns a specific domain, enforcing separation of concerns and quality.
      session. It defaults to Godot (the template's example engine); skills that
      need the pinned version read docs/engine-reference/<engine>/VERSION.md on
      demand regardless of this import. -->
-@docs/engine-reference/godot/VERSION.md
+<!-- Rewritten 2026-10-10 for this project: engine is Web (Canvas 2D), not Godot.
+     The Godot reference is no longer imported — it would load irrelevant API
+     snapshots into every session. -->
+@docs/engine-reference/web/VERSION.md
 
 
 ## Technical Preferences

@@ -1,0 +1,46 @@
+{
+  "_doc": {
+    "system": "map",
+    "purpose": "单路地图几何与镜头参数。世界单位 = 像素 @ zoom 1.0。所有坐标为 [x, y]。",
+    "units": { "distance": "world units (px)", "time": "seconds" },
+    "schema": {
+      "world": "width/height — 世界包围盒，镜头与越界钳制用",
+      "lane_path": "兵线推进折线，索引 0 = radiant 基地端，末位 = dire 基地端；radiant 小兵沿索引递增走，dire 递减",
+      "bases": "每方水晶坐标与出生点（英雄复活位置）",
+      "towers": "每方塔坐标，数组顺序 = 解锁顺序（外塔先，靠近基地的后）",
+      "jungle_camps": "中立营地坐标，id 必须存在于 jungle_camps.json",
+      "camera": "zoom 上下限与默认值、跟随平滑系数、边缘平移像素阈值"
+    },
+    "notes": "单路 + 路旁 3 组野怪；无战争迷雾、无地形阻挡（brief Out of scope）。"
+  },
+  "world": { "width": 4200, "height": 1500 },
+  "lane_path": [
+    [240, 1180], [820, 1090], [1400, 940], [2100, 760], [2800, 580], [3380, 440], [3960, 330]
+  ],
+  "bases": {
+    "radiant": { "nexus": [240, 1180], "fountain": [170, 1290] },
+    "dire": { "nexus": [3960, 330], "fountain": [4040, 215] }
+  },
+  "towers": {
+    "radiant": [[1174, 999], [1750, 850]],
+    "dire": [[2436, 674], [3026, 525]]
+  },
+  "jungle_camps": {
+    "camp_red": [1720, 420],
+    "camp_blue": [2520, 1100],
+    "camp_rift_lord": [2100, 190]
+  },
+  "fountain": {
+    "heal_pct_per_sec": 0.12,
+    "radius": 260,
+    "_doc": "泉水回复：每秒恢复 12% 最大生命/法力；半径内生效"
+  },
+  "camera": {
+    "zoom_min": 0.5,
+    "zoom_max": 1.7,
+    "zoom_default": 0.82,
+    "follow_lerp": 8.0,
+    "edge_pan_px": 26,
+    "edge_pan_speed": 900
+  }
+}

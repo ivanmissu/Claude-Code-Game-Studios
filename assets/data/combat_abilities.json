@@ -1,0 +1,109 @@
+{
+  "_doc": {
+    "system": "combat",
+    "purpose": "技能定义。英雄通过 id 引用；实现按 kind 分派（src/gameplay/abilities.mjs），新增英雄不需改代码。",
+    "units": {
+      "range/radius/width": "world units", "speed": "world units/秒",
+      "cooldown/cost": "数组按技能等级 1..rank_max 取值", "duration/delay": "秒"
+    },
+    "schema": {
+      "kind": "line | dash | aoe_point | self_buff | projectile_single | shield | passive",
+      "damage": "{base, per_rank, ratio_ad, ratio_ap} → base + per_rank*(rank-1) + ratio_ad*AD + ratio_ap*AP",
+      "damage_type": "physical | magic | true",
+      "targeting": "point（地面/光标点）| direction（朝光标方向的直线）| self | unit（单体目标）",
+      "rank_max": "普通技能 5，终极技能 3",
+      "required_level": "解锁该技能所需的英雄等级（终极技 6/11/16）",
+      "name_key/desc_key": "ui_strings.json 文案键"
+    }
+  },
+  "abilities": {
+    "third_strike": {
+      "kind": "passive", "name_key": "abil_third_strike_name", "desc_key": "abil_third_strike_desc",
+      "targeting": "self", "rank_max": 5, "required_level": 1,
+      "every_n_attacks": 3,
+      "damage": { "base": 22, "per_rank": 12, "ratio_ad": 0.35, "ratio_ap": 0 },
+      "damage_type": "physical"
+    },
+    "arc_blade": {
+      "kind": "line", "name_key": "abil_arc_blade_name", "desc_key": "abil_arc_blade_desc",
+      "targeting": "direction", "rank_max": 5, "required_level": 1,
+      "range": 800, "width": 74, "speed": 1250,
+      "pierce_minions": true, "hits_heroes_once": true,
+      "damage": { "base": 68, "per_rank": 42, "ratio_ad": 0.55, "ratio_ap": 0 },
+      "damage_type": "magic",
+      "cost": [40, 45, 50, 55, 60], "cooldown": [7.0, 6.5, 6.0, 5.5, 5.0]
+    },
+    "phase_step": {
+      "kind": "dash", "name_key": "abil_phase_step_name", "desc_key": "abil_phase_step_desc",
+      "targeting": "point", "rank_max": 5, "required_level": 1,
+      "range": 430, "dash_speed": 1650,
+      "buff": { "id": "phase_step_haste", "move_speed_pct": 0.35, "duration": 1.6 },
+      "cost": [45, 50, 55, 60, 65], "cooldown": [13.0, 12.0, 11.0, 10.0, 9.0]
+    },
+    "rift_nova": {
+      "kind": "aoe_point", "name_key": "abil_rift_nova_name", "desc_key": "abil_rift_nova_desc",
+      "targeting": "point", "rank_max": 5, "required_level": 3,
+      "range": 700, "radius": 195, "delay_sec": 0.55,
+      "damage": { "base": 74, "per_rank": 46, "ratio_ad": 0.2, "ratio_ap": 0.35 },
+      "damage_type": "magic",
+      "slow": { "move_speed_pct": -0.35, "duration": 1.5 },
+      "cost": [60, 70, 80, 90, 100], "cooldown": [11.0, 10.5, 10.0, 9.5, 9.0]
+    },
+    "sovereigns_edge": {
+      "kind": "self_buff", "name_key": "abil_sovereigns_edge_name", "desc_key": "abil_sovereigns_edge_desc",
+      "targeting": "self", "rank_max": 3, "required_level": 6,
+      "duration": 8.0,
+      "buff": {
+        "id": "sovereigns_edge",
+        "attack_speed_pct": [0.4, 0.6, 0.8],
+        "lifesteal_pct": [0.18, 0.26, 0.34],
+        "on_hit_true_damage": [18, 32, 46]
+      },
+      "cost": [100, 100, 100], "cooldown": [95.0, 80.0, 65.0]
+    },
+    "arcane_echo": {
+      "kind": "passive", "name_key": "abil_arcane_echo_name", "desc_key": "abil_arcane_echo_desc",
+      "targeting": "self", "rank_max": 5, "required_level": 1,
+      "every_n_attacks": 4,
+      "damage": { "base": 26, "per_rank": 14, "ratio_ad": 0, "ratio_ap": 0.45 },
+      "damage_type": "magic"
+    },
+    "void_lance": {
+      "kind": "projectile_single", "name_key": "abil_void_lance_name", "desc_key": "abil_void_lance_desc",
+      "targeting": "unit", "rank_max": 5, "required_level": 1,
+      "range": 820, "speed": 1000, "homing": true, "radius": 16,
+      "damage": { "base": 72, "per_rank": 44, "ratio_ad": 0, "ratio_ap": 0.72 },
+      "damage_type": "magic",
+      "cost": [50, 55, 60, 65, 70], "cooldown": [6.5, 6.0, 5.5, 5.0, 4.5]
+    },
+    "aegis_of_karn": {
+      "kind": "shield", "name_key": "abil_aegis_name", "desc_key": "abil_aegis_desc",
+      "targeting": "self", "rank_max": 5, "required_level": 1,
+      "duration": 3.0,
+      "shield": { "base": 60, "per_rank": 40, "ratio_ad": 0, "ratio_ap": 0.6 },
+      "buff": { "id": "aegis_haste", "move_speed_pct": 0.18, "duration": 3.0 },
+      "cost": [60, 65, 70, 75, 80], "cooldown": [14.0, 13.0, 12.0, 11.0, 10.0]
+    },
+    "entropy_field": {
+      "kind": "aoe_point", "name_key": "abil_entropy_name", "desc_key": "abil_entropy_desc",
+      "targeting": "point", "rank_max": 5, "required_level": 3,
+      "range": 760, "radius": 210, "delay_sec": 0.45,
+      "damage": { "base": 66, "per_rank": 40, "ratio_ad": 0, "ratio_ap": 0.6 },
+      "damage_type": "magic",
+      "slow": { "move_speed_pct": -0.28, "duration": 1.8 },
+      "cost": [70, 80, 90, 100, 110], "cooldown": [12.0, 11.5, 11.0, 10.5, 10.0]
+    },
+    "annihilation": {
+      "kind": "self_buff", "name_key": "abil_annihilation_name", "desc_key": "abil_annihilation_desc",
+      "targeting": "self", "rank_max": 3, "required_level": 6,
+      "duration": 9.0,
+      "buff": {
+        "id": "annihilation",
+        "damage_amp_pct": [0.22, 0.32, 0.42],
+        "cooldown_reduction_flat": [0.08, 0.12, 0.16],
+        "mana_regen_flat": [6, 9, 12]
+      },
+      "cost": [100, 100, 100], "cooldown": [100.0, 85.0, 70.0]
+    }
+  }
+}

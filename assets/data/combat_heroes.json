@@ -1,0 +1,79 @@
+{
+  "_doc": {
+    "system": "combat",
+    "purpose": "英雄基础属性与每级成长。数值 = 1 级面板；实际面板由 src/gameplay/stats.mjs 纯函数计算。",
+    "units": {
+      "health/mana": "点", "health_regen/mana_regen": "点/秒",
+      "attack_damage/ability_power": "点", "armor/magic_resist": "点（减伤 = resist/(100+resist)）",
+      "attack_range": "world units", "attack_speed": "次/秒", "move_speed": "world units/秒",
+      "growth_*": "每升 1 级增加的量（level-1 次）"
+    },
+    "schema": {
+      "display_name_key": "ui_strings.json 中的文案键（禁止硬编码文案）",
+      "team_shape": "无障碍：阵营形状编码（triangle/diamond），与颜色并行传递信息",
+      "attack": "{range, speed, windup_sec, projectile_speed|null(melee), damage_type}",
+      "abilities": "{passive,q,w,e,r} → combat_abilities.json 的 id",
+      "starting_items": "开局免费装备 id（可为空数组）"
+    }
+  },
+  "heroes": {
+    "vex": {
+      "display_name_key": "hero_vex_name",
+      "role_key": "hero_vex_role",
+      "team_shape": "triangle",
+      "radius": 26,
+      "health": 645, "growth_health": 98,
+      "health_regen": 4.6, "growth_health_regen": 0.42,
+      "mana": 300, "growth_mana": 34,
+      "mana_regen": 3.1, "growth_mana_regen": 0.26,
+      "attack_damage": 58, "growth_attack_damage": 3.3,
+      "ability_power": 0, "growth_ability_power": 0,
+      "armor": 31, "growth_armor": 3.1,
+      "magic_resist": 28, "growth_magic_resist": 2.2,
+      "attack_speed": 0.75, "growth_attack_speed": 0.023,
+      "move_speed": 252,
+      "attack": {
+        "range": 132, "speed": 0.75, "windup_sec": 0.22,
+        "projectile_speed": null, "damage_type": "physical"
+      },
+      "abilities": { "passive": "third_strike", "q": "arc_blade", "w": "phase_step", "e": "rift_nova", "r": "sovereigns_edge" },
+      "starting_items": [],
+      "kill_gold": 260,
+      "kill_xp": 240
+    },
+    "karn": {
+      "display_name_key": "hero_karn_name",
+      "role_key": "hero_karn_role",
+      "team_shape": "diamond",
+      "radius": 26,
+      "health": 562, "growth_health": 88,
+      "health_regen": 3.9, "growth_health_regen": 0.38,
+      "mana": 430, "growth_mana": 46,
+      "mana_regen": 4.2, "growth_mana_regen": 0.34,
+      "attack_damage": 47, "growth_attack_damage": 2.6,
+      "ability_power": 34, "growth_ability_power": 4.1,
+      "armor": 24, "growth_armor": 2.7,
+      "magic_resist": 30, "growth_magic_resist": 2.4,
+      "attack_speed": 0.66, "growth_attack_speed": 0.019,
+      "move_speed": 246,
+      "attack": {
+        "range": 425, "speed": 0.66, "windup_sec": 0.28,
+        "projectile_speed": 900, "damage_type": "magic"
+      },
+      "abilities": { "passive": "arcane_echo", "q": "void_lance", "w": "aegis_of_karn", "e": "entropy_field", "r": "annihilation" },
+      "starting_items": [],
+      "kill_gold": 260,
+      "kill_xp": 240
+    }
+  },
+  "hero_combat": {
+    "attack_move_acquire_radius": 640,
+    "chase_giveup_radius": 1450,
+    "_doc": "攻击移动时的自动索敌半径；追击超过 chase_giveup_radius 放弃目标（防止被风筝到地图另一端）。sim.mjs 读取，不含硬编码数值。"
+  },
+  "level_max": 18,
+  "skill_points_per_level": 1,
+  "starting_level": 1,
+  "xp_radius": 950,
+  "hero_radius": 26
+}
