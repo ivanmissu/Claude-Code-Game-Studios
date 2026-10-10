@@ -1,0 +1,98 @@
+{
+  "_doc": {
+    "system": "ai",
+    "purpose": "敌方英雄 AI 的全部阈值、权重与反应参数（.claude/rules/ai-code.md：参数必须数据驱动、可调试、有性能预算）。",
+    "units": { "pct": "比例（0.35 = 35%）", "time": "秒", "range": "world units" },
+    "schema": {
+      "reaction": "{decision_interval_sec, input_delay_sec, aim_error_deg, miss_chance_pct} — AI 不得有超人的零延迟完美反应",
+      "states": "状态机状态名与其进入/退出阈值",
+      "budget": "{max_target_scan_per_tick, warn_us_per_tick} — 性能预算，测试会断言",
+      "difficulty": "预设档位（MVP 只使用 normal；ui 未暴露，见 story-004 Out of Scope）"
+    }
+  },
+  "difficulty": "normal",
+  "reaction": {
+    "decision_interval_sec": 0.12,
+    "input_delay_sec": 0.16,
+    "aim_error_deg": 5.5,
+    "miss_chance_pct": 0.06,
+    "last_hit_timing_error_pct": 0.09
+  },
+  "states": {
+    "retreat": {
+      "enter_hp_pct": 0.38,
+      "exit_hp_pct": 0.62,
+      "enter_under_tower_dive": true,
+      "destination": "fountain"
+    },
+    "farm": {
+      "last_hit_hp_pct_threshold": 1.0,
+      "preferred_range_pct": 0.78,
+      "lane_clear": {
+        "enabled": true,
+        "when_no_enemy_hero_within": 900,
+        "self_hp_pct_above": 0.55,
+        "search_radius": 620,
+        "_doc": "清线推进：敌方英雄不在 when_no_enemy_hero_within 内且自身血量健康时，不再只补最后一下，而是主动清光对方兵线，让己方兵线推到塔下。这是打破中路僵局的关键 —— 实测没有它时双方兵线永远在中路互耗，一局 25 分钟也推不掉第二座塔（brief 要求 6-12 分钟分胜负）。"
+      },
+      "_doc": "preferred_range_pct = 攻击射程的比例，AI 站在这个距离等补刀时机"
+    },
+    "harass": {
+      "min_mana_pct": 0.35,
+      "max_enemy_hp_pct": 0.72,
+      "cast_range_pct": 0.86,
+      "cooldown_gap_sec": 0.4
+    },
+    "push": {
+      "min_hp_pct": 0.55,
+      "require_ally_minions_near_structure": 260,
+      "attack_structure": true,
+      "punish_enemy_dead": true,
+      "punish_min_hp_pct": 0.32,
+      "push_when_lane_cleared_within": 480,
+      "push_min_hp_pct_no_cover": 0.6,
+      "commit_kill": {
+        "enemy_hp_pct_below": 0.34,
+        "self_hp_pct_above": 0.62,
+        "chase_radius": 620,
+        "avoid_enemy_tower": true,
+        "tower_avoidance_margin": 90,
+        "_doc": "收割窗口：敌方英雄血量低于阈值且自身血量健康时，追着打而不是回去补刀。没有这条时双方 AI 都不会死，也就永远没有推进窗口，一局打不完。"
+      },
+      "_doc": "punish_*：敌方英雄死亡（复活倒计时中）时，血量高于 punish_min_hp_pct 就无视兵线掩护直接推塔 —— MOBA 里最重要的推进窗口。没有这条时两个 AI 会永远在兵线均势处对峙，一局打不完（实测 15 分钟僵局）。"
+    },
+    "defend": {
+      "structure_hp_pct_alert": 0.85,
+      "recall_radius": 900,
+      "_doc": "己方塔被攻击（或血量低于阈值）时回防"
+    },
+    "jungle": {
+      "enabled": true,
+      "min_level": 3,
+      "min_hp_pct": 0.65,
+      "max_walk_units": 900,
+      "skip_if_lane_minions_alive_within": 620,
+      "_doc": "只在兵线不在附近、血量健康时顺路打红/蓝；不做大龙争夺决策（story-004 Out of Scope）"
+    },
+    "recall": {
+      "min_hp_pct": 0.45,
+      "fountain_heal_wait_sec": 3.0
+    }
+  },
+  "item_build": {
+    "route": ["swift_boots", "iron_edge", "rift_cleaver", "vampiric_fang", "titan_core", "sovereign_plate"],
+    "buy_when_gold_pct_of_cost": 1.0,
+    "_doc": "固定出装路线（story-004 Out of Scope：不做动态出装评估）。路线 id 必须存在于 economy_items.json。"
+  },
+  "skill_levels": {
+    "priority": ["q", "e", "w", "r"],
+    "take_r_at_levels": [6, 11, 16],
+    "_doc": "有技能点时按 priority 顺序加点，终极技只在 6/11/16 级点。"
+  },
+  "budget": {
+    "max_target_scan_per_tick": 24,
+    "warn_us_per_tick": 400,
+    "warmup_decisions": 3,
+    "_doc": "每 tick 最多扫描 24 个候选目标（用空间网格取近邻）；稳态单次决策超过 400µs 时打印警告（enforce: warn）。前 warmup_decisions 次决策不计入警告——JIT 预热会让第一次决策慢一个数量级，那不是稳态成本。"
+  }
+}

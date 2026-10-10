@@ -1,0 +1,87 @@
+{
+  "_doc": {
+    "system": "jungle",
+    "purpose": "路旁 3 组中立营地：怪物构成、牵引规则、增益效果、刷新时间。坐标在 map_lane.json 的 jungle_camps。",
+    "units": { "time": "秒", "range/radius": "world units", "pct": "比例" },
+    "schema": {
+      "camps.*.monsters": "[{type, count}] — type 引用本文件 monster_types（中立怪与小兵共用战斗管线）",
+      "leash": "{radius, reset_heal_pct_per_sec} — 超出牵引半径返回营地并快速回满（防风筝到基地）",
+      "buffs.*": "增益定义，施加到击杀者（team_wide=true 时施加到该阵营所有英雄）",
+      "spawn_after_sec": "营地首次可生成的游戏时间门槛（大龙 = 前期不可争夺的节奏点）"
+    }
+  },
+  "monster_types": {
+    "brute": {
+      "display_name_key": "neutral_brute_name", "shape": "circle_large", "radius": 22,
+      "health": 620, "attack_damage": 34, "damage_type": "physical",
+      "armor": 16, "magic_resist": 12,
+      "attack_range": 78, "attack_interval": 1.15, "windup_sec": 0.28,
+      "move_speed": 205, "bounty_gold": 58, "bounty_xp": 82
+    },
+    "wisp": {
+      "display_name_key": "neutral_wisp_name", "shape": "circle_small", "radius": 15,
+      "health": 340, "attack_damage": 26, "damage_type": "magic",
+      "armor": 8, "magic_resist": 22,
+      "attack_range": 290, "attack_interval": 1.25, "windup_sec": 0.3,
+      "projectile_speed": 700,
+      "move_speed": 200, "bounty_gold": 42, "bounty_xp": 62
+    },
+    "rift_lord": {
+      "display_name_key": "neutral_rift_lord_name", "shape": "hexagon_large", "radius": 46,
+      "health": 3400, "attack_damage": 96, "damage_type": "true",
+      "armor": 40, "magic_resist": 40,
+      "attack_range": 190, "attack_interval": 1.4, "windup_sec": 0.45,
+      "move_speed": 180, "bounty_gold": 320, "bounty_xp": 420
+    }
+  },
+  "camps": {
+    "camp_red": {
+      "name_key": "camp_red_name",
+      "monsters": [{ "type": "brute", "count": 2 }],
+      "spawn_after_sec": 0,
+      "respawn_sec": 105,
+      "buff": "buff_cinder"
+    },
+    "camp_blue": {
+      "name_key": "camp_blue_name",
+      "monsters": [{ "type": "wisp", "count": 2 }],
+      "spawn_after_sec": 0,
+      "respawn_sec": 105,
+      "buff": "buff_wellspring"
+    },
+    "camp_rift_lord": {
+      "name_key": "camp_rift_lord_name",
+      "monsters": [{ "type": "rift_lord", "count": 1 }],
+      "spawn_after_sec": 210,
+      "respawn_sec": 240,
+      "buff": "buff_rift_dominion"
+    }
+  },
+  "leash": {
+    "radius": 620,
+    "reset_heal_pct_per_sec": 0.35,
+    "return_move_speed_pct": 1.25,
+    "_doc": "被攻击后追击；目标死亡/离开或超出 radius → 返回出生点并按每秒 35% 最大生命回满，返回时移速 +25%。"
+  },
+  "buffs": {
+    "buff_cinder": {
+      "name_key": "buff_cinder_name", "icon": "cinder",
+      "duration": 120, "team_wide": false, "lost_on_death": true,
+      "on_hit_true_damage": 22,
+      "_doc": "红：普攻附带 22 点持续真实伤害（实现为一次性真实伤害，MVP 不做 DoT 叠层）"
+    },
+    "buff_wellspring": {
+      "name_key": "buff_wellspring_name", "icon": "wellspring",
+      "duration": 120, "team_wide": false, "lost_on_death": true,
+      "mana_regen_flat": 7.5, "cooldown_reduction_pct": 0.12,
+      "_doc": "蓝：法力回复 +7.5/秒，冷却缩减 12%"
+    },
+    "buff_rift_dominion": {
+      "name_key": "buff_rift_dominion_name", "icon": "dominion",
+      "duration": 150, "team_wide": true, "lost_on_death": false,
+      "attack_damage": 26, "ability_power": 34, "health": 220, "ability_damage_pct": 0.12,
+      "team_gold": 300,
+      "_doc": "大龙：全队属性强化 + 每人 300 金钱；死亡不丢失（team_wide）"
+    }
+  }
+}

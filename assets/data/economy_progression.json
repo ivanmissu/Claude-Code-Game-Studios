@@ -1,0 +1,36 @@
+{
+  "_doc": {
+    "system": "economy",
+    "purpose": "经验曲线、金钱来源、复活时间。升级与购买的所有数值都在这里，代码不含平衡数字。",
+    "units": { "time": "秒", "gold/xp": "点", "pct": "比例（0.35 = 35%）" },
+    "schema": {
+      "xp_to_next": "长度 17 的数组：从等级 i 升到 i+1 所需经验（level 1→2 为第 0 项）",
+      "passive_gold_per_sec": "每个英雄的被动收入",
+      "hero_kill": "{base_gold, streak_bonus_gold, streak_bonus_max, shutdown_gold, xp_radius_share}",
+      "respawn": "{base_sec, per_level_sec, max_sec} → min(max, base + per_level*(level-1))",
+      "item_slots": "装备栏位数（6 = 标准 MOBA）",
+      "sell_ratio": "出售返还比例",
+      "starting_gold": "开局金钱"
+    }
+  },
+  "starting_gold": 520,
+  "starting_level": 1,
+  "level_max": 18,
+  "xp_to_next": [280, 380, 480, 580, 680, 780, 880, 980, 1080, 1180, 1280, 1380, 1480, 1580, 1680, 1780, 1880],
+  "passive_gold_per_sec": 1.95,
+  "hero_kill": {
+    "base_gold": 260,
+    "streak_bonus_gold": 60,
+    "streak_bonus_max": 5,
+    "shutdown_gold": 150,
+    "xp_share_radius": 950
+  },
+  "respawn": { "base_sec": 7.5, "per_level_sec": 2.15, "max_sec": 46 },
+  "item_slots": 6,
+  "sell_ratio": 0.6,
+  "fountain_return_sec": 0.0,
+  "assist": {
+    "enabled": false,
+    "_doc": "1v1 无助攻（brief Out of scope：不做多人）。保留字段以便未来扩展，当前代码不读取 → 非孤儿：economy.mjs 显式断言 disabled。"
+  }
+}

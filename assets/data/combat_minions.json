@@ -1,0 +1,110 @@
+{
+  "_doc": {
+    "system": "combat",
+    "purpose": "小兵类型与波次构成。小兵是中立于英雄之外的推进单位，由双方水晶定期产出。",
+    "units": {
+      "health/attack_damage/armor/magic_resist": "点", "attack_range": "world units",
+      "attack_interval": "秒/次", "move_speed": "world units/秒",
+      "bounty_gold/bounty_xp": "末刀与经验奖励", "time": "秒"
+    },
+    "schema": {
+      "types.*.damage_type": "physical | magic | true",
+      "types.*.bonus_damage_vs_structures": "对塔/水晶的伤害倍率（攻城兵的核心价值）",
+      "wave": "{first_wave_sec, wave_interval_sec, composition, siege_every_n_waves}",
+      "scaling": "{health_per_min_pct, damage_per_min_pct} — 每分钟线性成长，防拖到无限期",
+      "aggro": "仇恨规则参数（combat.mjs 使用）：优先级见 story-002 验收标准"
+    }
+  },
+  "types": {
+    "melee": {
+      "display_name_key": "minion_melee_name",
+      "shape": "square",
+      "radius": 13,
+      "health": 118, "attack_damage": 24, "damage_type": "physical",
+      "armor": 6, "magic_resist": 4,
+      "attack_range": 62, "attack_interval": 1.0, "windup_sec": 0.2,
+      "move_speed": 192,
+      "bounty_gold": 21, "bounty_xp": 30,
+      "bonus_damage_vs_structures": 1.0
+    },
+    "ranged": {
+      "display_name_key": "minion_ranged_name",
+      "shape": "circle_small",
+      "radius": 12,
+      "health": 86, "attack_damage": 26, "damage_type": "magic",
+      "armor": 4, "magic_resist": 8,
+      "attack_range": 330, "attack_interval": 1.1, "windup_sec": 0.25,
+      "projectile_speed": 780,
+      "move_speed": 192,
+      "bounty_gold": 16, "bounty_xp": 25,
+      "bonus_damage_vs_structures": 1.0
+    },
+    "siege": {
+      "display_name_key": "minion_siege_name",
+      "shape": "hexagon",
+      "radius": 19,
+      "health": 300, "attack_damage": 44, "damage_type": "physical",
+      "armor": 14, "magic_resist": 10,
+      "attack_range": 300, "attack_interval": 1.6, "windup_sec": 0.35,
+      "projectile_speed": 620,
+      "move_speed": 176,
+      "bounty_gold": 46, "bounty_xp": 72,
+      "bonus_damage_vs_structures": 2.6
+    }
+  },
+  "wave": {
+    "first_wave_sec": 18,
+    "wave_interval_sec": 30,
+    "composition": { "melee": 3, "ranged": 3 },
+    "siege_every_n_waves": 2,
+    "spawn_stagger_sec": 0.42,
+    "spawn_jitter_units": 34
+  },
+  "scaling": {
+    "health_per_min_pct": 0.062,
+    "damage_per_min_pct": 0.031,
+    "structure_damage_per_min_pct": 0.14,
+    "_doc": "structure_damage_per_min_pct：小兵对建筑伤害的每分钟成长。建筑血量不成长，所以这条曲线保证越到后期兵线推塔越快 —— 这是「一局必然收敛、不会双方都推不动」的主要杠杆（brief 要求 6-12 分钟分胜负）。"
+  },
+  "late_game_pressure": {
+    "enabled": true,
+    "start_min": 6,
+    "step_min": 2,
+    "max_steps": 4,
+    "structure_damage_mult_per_step": 1.6,
+    "health_mult_per_step": 1.2,
+    "damage_mult_per_step": 1.2,
+    "wave_interval_mult_per_step": 0.8,
+    "min_wave_interval_sec": 12,
+    "_doc": "决胜期：6 分钟后每 2 分钟升一级，小兵对建筑伤害 ×1.75、生命 ×1.22、伤害 ×1.2、出兵间隔 ×0.8（下限 12s），最多 4 级。为什么需要它：1v1 单线的中路兵线会自然形成均势僵局 —— 双方兵线在中路互耗、塔清兵、英雄互相消耗，实测 25 分钟也推不掉第二座塔。决胜期让兵线压力按指数增长，保证一局在 6-12 分钟内收敛（brief MVP feature 9 的验收标准），同时给玩家一个明确的时钟：再拖下去就守不住了。数值可由 tools/smoke.mjs 的多种子对局回归。"
+  },
+  "snowball": {
+    "extra_siege_per_structure_destroyed": 1,
+    "max_extra_siege": 3,
+    "_doc": "雪球机制：每推掉一座敌方建筑，本方之后每一波兵永久多 1 个攻城兵（上限 3）。这是打破单线对称僵局的关键 —— 双方兵线完全相同就会永远在中路同时全灭，外塔掉了以后内塔在基地深处、兵线又在中路重新对峙（实测 15 分钟只掉一座塔）。有了它，领先的一方兵线会真的推得动第二座塔和水晶，落后的一方必须去清线，游戏自然收敛（对应 LoL 破兵营出超级兵的同一条设计逻辑）。"
+  },
+  "wave_escalation": {
+    "every_n_waves": 4,
+    "add_melee": 1,
+    "add_ranged": 1,
+    "max_extra_each": 4,
+    "_doc": "每 4 波给每波各加 1 近战/远程兵，各自最多加 4。与 structure_damage_per_min_pct 一起构成后期压力曲线。实测依据：tools/render_evidence.mjs 曾跑出两个 AI 15 分钟不结束的僵局，加这两条后一局收敛。"
+  },
+  "aggro": {
+    "acquire_radius": 460,
+    "leash_radius": 340,
+    "leash_cooldown_sec": 0.55,
+    "retarget_interval_sec": 0.5,
+    "priority": ["attacking_ally", "enemy_minion", "enemy_hero"],
+    "_doc_leash": "leash_radius 是「小兵离自己车路锚点的最大偏离」，不是离目标的距离 —— 写成后者会让小兵被拖着横穿地图；leash_cooldown_sec 是被拉回后不再索敌的时间，没有它会与同一目标无限拉扯、净位移为零（曾经导致双方兵线在中路两侧约 500 单位处永久对峙、一局推不完）。",
+    "_doc": "优先级从高到低：正在攻击我方单位的敌人 > 附近敌方小兵 > 附近敌方英雄。塔/水晶不参与小兵仇恨（它们不打塔，除非无其他目标且已进入塔范围 → 见 combat.mjs 的 structure_fallback）。"
+  },
+  "structure_fallback": {
+    "enabled": true,
+    "range": 560,
+    "_doc_range": "range 必须大于中路兵线到塔的典型距离（实测约 350-700），否则兵线永远在中路互殴、塔从不成为小兵的目标，兵线也就永远不会前进（实测：塔血量 6 分钟一动不动、一局 25 分钟推不完）。560 让塔成为兵线的磁铁：贴上去的小兵会顶着塔的伤害拆塔，这才是「兵线是推进资源」的 MOBA 语义。近战小兵仍要走进自己的射程才打得动，所以不会变成超远程拆塔。",
+    "siege_when_adjacent": true,
+    "_doc_siege": "siege_when_adjacent：小兵一旦进入 range 且该建筑可被攻击，就优先拆建筑，即使身边还有敌方小兵。没有这条时，双方兵线在中路（离塔约 350-700 单位）永久互殴 —— 贴到塔边的小兵仍在打小兵，塔血量可以 6 分钟一动不动，一局 25 分钟也推不完（实测）。真实 MOBA 里小兵贴着塔就打塔，这条让兵线成为可用的推进资源。",
+    "_doc": "小兵在 acquire_radius 内找不到任何敌人、且距离敌方建筑小于此值时，攻击建筑 —— 这是兵线能推塔的原因。"
+  }
+}
